@@ -6,6 +6,7 @@ import "go.uber.org/fx"
 var Module = fx.Options(
 	fx.Provide(NewUserRoutes),
 	fx.Provide(NewAuthRoutes),
+	fx.Provide(NewRoomRoutes),
 	fx.Provide(NewRoutes),
 )
 
@@ -20,10 +21,12 @@ type Route interface {
 // NewRoutes sets up routes
 func NewRoutes(
 	userRoutes UserRoutes,
+	roomRoutes RoomRoutes,
 	authRoutes AuthRoutes,
 ) Routes {
 	return Routes{
 		userRoutes,
+		roomRoutes,
 		authRoutes,
 	}
 }

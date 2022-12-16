@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// Database modal
+// Database model
 type Database struct {
 	*gorm.DB
 }

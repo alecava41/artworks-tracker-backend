@@ -13,7 +13,7 @@ type UserService struct {
 	repository repository.UserRepository
 }
 
-// NewUserService creates a new userservice
+// NewUserService creates a new UserService
 func NewUserService(logger lib.Logger, repository repository.UserRepository) UserService {
 	return UserService{
 		logger:     logger,
