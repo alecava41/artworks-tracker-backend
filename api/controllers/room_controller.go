@@ -46,7 +46,5 @@ func (u RoomController) GetOneRoom(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"data": room,
-	})
+	c.JSON(200, room)
 }

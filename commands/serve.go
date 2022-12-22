@@ -1,10 +1,13 @@
 package commands
 
 import (
+	"context"
+	"github.com/brutella/dnssd"
 	"github.com/dipeshdulal/clean-gin/api/middlewares"
 	"github.com/dipeshdulal/clean-gin/api/routes"
 	"github.com/dipeshdulal/clean-gin/lib"
 	"github.com/spf13/cobra"
+	"log"
 )
 
 // ServeCommand test command
@@ -27,6 +30,35 @@ func (s *ServeCommand) Run() lib.CommandRunner {
 	) {
 		middleware.Setup()
 		route.Setup()
+
+		cfg := dnssd.Config{
+			Name: "MuseumBackend",
+			Type: "_http._tcp",
+			Port: 5000,
+		}
+
+		sv, err := dnssd.NewService(cfg)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		rp, err := dnssd.NewResponder()
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		_, err = rp.Add(sv)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		err = rp.Respond(ctx)
+		if err != nil {
+			log.Println(err.Error())
+		}
 
 		logger.Info("Running server")
 		if env.ServerPort == "" {

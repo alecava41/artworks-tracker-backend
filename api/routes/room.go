@@ -10,16 +10,16 @@ import (
 type RoomRoutes struct {
 	logger         lib.Logger
 	handler        lib.RequestHandler
-	userController controllers.RoomController
+	roomController controllers.RoomController
 	authMiddleware middlewares.JWTAuthMiddleware
 }
 
 // Setup user routes
 func (s RoomRoutes) Setup() {
 	s.logger.Info("Setting up routes")
-	api := s.handler.Gin.Group("/api").Use(s.authMiddleware.Handler())
+	api := s.handler.Gin.Group("/api")
 	{
-		api.GET("/rooms/:artId", s.userController.GetOneRoom)
+		api.GET("/rooms/:artId", s.roomController.GetOneRoom)
 	}
 }
 
@@ -33,7 +33,7 @@ func NewRoomRoutes(
 	return RoomRoutes{
 		handler:        handler,
 		logger:         logger,
-		userController: roomController,
+		roomController: roomController,
 		authMiddleware: authMiddleware,
 	}
 }
