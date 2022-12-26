@@ -19,7 +19,7 @@ func (s RoomRoutes) Setup() {
 	s.logger.Info("Setting up routes")
 	api := s.handler.Gin.Group("/api")
 	{
-		api.GET("/rooms/:artId", s.roomController.GetOneRoom)
+		api.GET("/rooms/", s.roomController.GetOneRoom)
 	}
 }
 

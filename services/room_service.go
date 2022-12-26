@@ -4,6 +4,7 @@ import (
 	"github.com/dipeshdulal/clean-gin/lib"
 	"github.com/dipeshdulal/clean-gin/models"
 	"github.com/dipeshdulal/clean-gin/repository"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -28,6 +29,14 @@ func (s RoomService) WithTrx(trxHandle *gorm.DB) RoomService {
 }
 
 // GetOneRoom gets one user
-func (s RoomService) GetOneRoom(beaconId uint) (room models.Room, err error) {
-	return room, s.repository.Preload("Artworks").Find(&room, beaconId).Error
+func (s RoomService) GetOneRoom(beaconId uuid.UUID) (room models.Room, err error) {
+	//return room, s.repository.Preload("Artworks").
+	//	Find(&room).Error
+
+	var tinyArtwork = new(models.TinyArtwork)
+
+	s.repository.Find(&tinyArtwork, "beacon = ?", beaconId)
+
+	return room, s.repository.Preload("Artworks").
+		Find(&room, tinyArtwork.RoomId).Error
 }

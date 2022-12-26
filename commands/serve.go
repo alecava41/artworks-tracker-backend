@@ -17,7 +17,7 @@ func (s *ServeCommand) Short() string {
 	return "serve application"
 }
 
-func (s *ServeCommand) Setup(cmd *cobra.Command) {}
+func (s *ServeCommand) Setup(*cobra.Command) {}
 
 func (s *ServeCommand) Run() lib.CommandRunner {
 	return func(
@@ -55,10 +55,12 @@ func (s *ServeCommand) Run() lib.CommandRunner {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 
-		err = rp.Respond(ctx)
-		if err != nil {
-			log.Println(err.Error())
-		}
+		go func() {
+			err = rp.Respond(ctx)
+			if err != nil {
+				log.Println(err.Error())
+			}
+		}()
 
 		logger.Info("Running server")
 		if env.ServerPort == "" {

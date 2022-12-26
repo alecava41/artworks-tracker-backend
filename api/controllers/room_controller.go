@@ -1,12 +1,11 @@
 package controllers
 
 import (
-	"net/http"
-	"strconv"
-
 	"github.com/dipeshdulal/clean-gin/lib"
 	"github.com/dipeshdulal/clean-gin/services"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"net/http"
 )
 
 // RoomController data type
@@ -25,9 +24,9 @@ func NewRoomController(roomService services.RoomService, logger lib.Logger) Room
 
 // GetOneRoom gets one user
 func (u RoomController) GetOneRoom(c *gin.Context) {
-	artID := c.Param("artId")
+	artID := c.Query("beacon")
 
-	id, err := strconv.Atoi(artID)
+	id, err := uuid.Parse(artID)
 	if err != nil {
 		u.logger.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -36,7 +35,7 @@ func (u RoomController) GetOneRoom(c *gin.Context) {
 		return
 	}
 
-	room, err := u.service.GetOneRoom(uint(id))
+	room, err := u.service.GetOneRoom(id)
 
 	if err != nil {
 		u.logger.Error(err)
