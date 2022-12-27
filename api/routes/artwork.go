@@ -19,7 +19,7 @@ func (s ArtworkRoutes) Setup() {
 	s.logger.Info("Setting up routes")
 	api := s.handler.Gin.Group("/api")
 	{
-		api.GET("/artworks/:artId", s.artworkController.GetOneArtwork)
+		api.GET("/artworks/:beaconId", s.artworkController.GetOneArtwork)
 	}
 }
 

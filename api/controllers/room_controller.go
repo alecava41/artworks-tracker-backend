@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/dipeshdulal/clean-gin/lib"
 	"github.com/dipeshdulal/clean-gin/services"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -39,9 +41,15 @@ func (u RoomController) GetOneRoom(c *gin.Context) {
 
 	if err != nil {
 		u.logger.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.Status(http.StatusNotFound)
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+		}
+
 		return
 	}
 
