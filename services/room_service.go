@@ -31,7 +31,7 @@ func (s RoomService) WithTrx(trxHandle *gorm.DB) RoomService {
 // GetOneRoom gets one room
 func (s RoomService) GetOneRoom(beaconId uuid.UUID) (room models.Room, err error) {
 
-	var tinyArtwork = new(models.TinyArtwork)
+	var tinyArtwork = new(models.ArtworkInfo)
 	s.repository.Find(&tinyArtwork, "beacon = ?", beaconId)
 
 	return room, s.repository.Preload("Artworks").
