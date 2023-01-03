@@ -59,6 +59,7 @@ func (s *ServeCommand) Run() lib.CommandRunner {
 			err = rp.Respond(ctx)
 			if err != nil {
 				log.Println(err.Error())
+				return
 			}
 		}()
 

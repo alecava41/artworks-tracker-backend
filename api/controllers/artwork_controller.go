@@ -8,6 +8,8 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 // ArtworkController data type
@@ -16,21 +18,21 @@ type ArtworkController struct {
 	logger  lib.Logger
 }
 
-// NewArtworkController creates new user controller
-func NewArtworkController(roomService services.ArtworkService, logger lib.Logger) ArtworkController {
+// NewArtworkController creates new artwork controller
+func NewArtworkController(artworkService services.ArtworkService, logger lib.Logger) ArtworkController {
 	return ArtworkController{
-		service: roomService,
+		service: artworkService,
 		logger:  logger,
 	}
 }
 
-// GetOneArtwork gets one user
-func (u ArtworkController) GetOneArtwork(c *gin.Context) {
+// GetOneArtwork gets one artwork
+func (a ArtworkController) GetOneArtwork(c *gin.Context) {
 	artID := c.Param("beaconId")
 
 	id, err := uuid.Parse(artID)
 	if err != nil {
-		u.logger.Error(err)
+		a.logger.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
 		})
@@ -39,10 +41,10 @@ func (u ArtworkController) GetOneArtwork(c *gin.Context) {
 
 	lanID := c.DefaultQuery("lan", "en")
 
-	artwork, err := u.service.GetOneArtwork(id, lanID)
+	artwork, err := a.service.GetOneArtwork(id, lanID)
 
 	if err != nil {
-		u.logger.Error(err)
+		a.logger.Error(err)
 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.Status(http.StatusNotFound)
@@ -56,4 +58,28 @@ func (u ArtworkController) GetOneArtwork(c *gin.Context) {
 	}
 
 	c.JSON(200, artwork)
+}
+
+// GetArtworkImage gets one artwork
+func (a ArtworkController) GetArtworkImage(c *gin.Context) {
+	beaconId := c.Param("beaconId")
+	imgNumber := c.Param("img")
+
+	currentPath, err := os.Getwd()
+	if err != nil {
+		a.logger.Error(err.Error())
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	fullName := filepath.Join(currentPath, "..", "images", "artworks", beaconId, imgNumber)
+
+	files, err := filepath.Glob(fullName + "*")
+	if err != nil {
+		a.logger.Error(err.Error())
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	c.File(files[0])
 }
