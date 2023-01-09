@@ -17,7 +17,6 @@
 # Go workspace file
 go.work
 
-.env
 server.log
 clean-gin
 __debug_bin
