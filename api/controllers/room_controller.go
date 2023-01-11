@@ -37,7 +37,9 @@ func (u RoomController) GetOneRoom(c *gin.Context) {
 		return
 	}
 
-	room, err := u.service.GetOneRoom(id)
+	lanID := c.DefaultQuery("lan", "en")
+
+	room, err := u.service.GetOneRoom(id, lanID)
 
 	if err != nil {
 		u.logger.Error(err)

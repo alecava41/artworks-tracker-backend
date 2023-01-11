@@ -29,11 +29,22 @@ func (s RoomService) WithTrx(trxHandle *gorm.DB) RoomService {
 }
 
 // GetOneRoom gets one room
-func (s RoomService) GetOneRoom(beaconId uuid.UUID) (room models.Room, err error) {
+func (s RoomService) GetOneRoom(beaconId uuid.UUID, lan string) (room models.Room, err error) {
 
+	// Get the room id
 	var tinyArtwork = new(models.ArtworkInfo)
 	s.repository.Find(&tinyArtwork, "beacon = ?", beaconId)
 
-	return room, s.repository.Preload("Artworks").
-		First(&room, tinyArtwork.RoomId).Error
+	// Get all the ArtworkInfo
+	var artworksInfo = make([]*models.ArtworkInfo, 0)
+	s.repository.Raw(`
+		SELECT * 
+		FROM artworks a INNER JOIN translations t ON a.id = t.artwork
+		WHERE room = ? and language = ?
+	`, tinyArtwork.RoomId, lan).Find(&artworksInfo)
+
+	err = s.repository.First(&room, tinyArtwork.RoomId).Error
+	room.Artworks = artworksInfo
+
+	return room, err
 }
